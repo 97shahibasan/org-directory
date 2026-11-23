@@ -73,14 +73,17 @@ export class OrganisationDirectoryComponent implements OnInit {
   }
 
   sortAria(field: SortField): string {
-    const active = this.store.sortField() === field;
-    const direction = active
-      ? this.i18n.t(this.store.sortDirection() === 'asc' ? 'list.sort.asc' : 'list.sort.desc')
-      : this.i18n.t('list.sort.asc');
     const column =
       field === 'name' ? this.i18n.t('list.columns.name') : this.i18n.t('list.columns.created');
-    return this.i18n.t('a11y.sortButton', { column, direction });
+    if (this.store.sortField() !== field) {
+      return this.i18n.t('a11y.sortButtonInactive', { column });
+    }
+    const direction = this.i18n.t(
+      this.store.sortDirection() === 'asc' ? 'list.sort.asc' : 'list.sort.desc'
+    );
+    return this.i18n.t('a11y.sortButtonActive', { column, direction });
   }
+
 
   private syncUrl(): void {
     const q = this.store.search().trim();

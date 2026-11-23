@@ -69,6 +69,8 @@
   },
   "a11y": {
     "statusPrefix": "Status:",
-    "sortButton": "{{column}}, currently sorted {{direction}}. Activate to change sort."
+    "sortButtonActive": "{{column}}, currently sorted {{direction}}. Activate to reverse sort.",
+    "sortButtonInactive": "Sort by {{column}}."
   }
+
 }
