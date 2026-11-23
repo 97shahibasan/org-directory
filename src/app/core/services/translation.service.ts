@@ -11,7 +11,9 @@ export class TranslationService {
   readonly ready = signal(false);
 
   async load(locale = 'en'): Promise<void> {
-    const data = await firstValueFrom(this.http.get<Dict>(`/i18n/${locale}.json`));
+    // Relative URL so GitHub Pages / sub-path deploys resolve under <base href>.
+    const data = await firstValueFrom(this.http.get<Dict>(`i18n/${locale}.json`));
+
     this.dictionary.set(data);
     this.ready.set(true);
   }
