@@ -1,0 +1,74 @@
+{
+  "app": {
+    "title": "Organisation Directory",
+    "subtitle": "Find an organisation, check its status, or add a new one."
+  },
+  "nav": {
+    "list": "Organisations",
+    "create": "Add organisation"
+  },
+  "list": {
+    "heading": "Organisations",
+    "columns": {
+      "name": "Name",
+      "status": "Status",
+      "members": "Members",
+      "owner": "Owner",
+      "created": "Created"
+    },
+    "sort": {
+      "byName": "Sort by name",
+      "byCreated": "Sort by created date",
+      "asc": "ascending",
+      "desc": "descending"
+    },
+    "loading": "Loading organisations…",
+    "loadingProgress": "Loaded {{loaded}} of {{total}} organisations…",
+    "empty": "No organisations match your filters.",
+    "emptyHint": "Try clearing the search or status filter.",
+    "error": "We could not load organisations.",
+    "errorHint": "The directory API failed. You can try again.",
+    "retry": "Try again",
+    "rateLimitWait": "Waiting for the API rate limit before fetching the next page…",
+    "unknownName": "Unnamed organisation",
+    "unknownOwner": "No owner email",
+    "unknownDate": "Unknown date",
+    "invalidDate": "Invalid date",
+    "membersUnavailable": "—"
+  },
+  "filters": {
+    "searchLabel": "Search by name",
+    "searchPlaceholder": "Type an organisation name…",
+    "statusLabel": "Status",
+    "statusAll": "All statuses",
+    "clear": "Clear filters"
+  },
+  "status": {
+    "active": "Active",
+    "inactive": "Inactive",
+    "suspended": "Suspended",
+    "unknown": "Unknown"
+  },
+  "create": {
+    "heading": "Add organisation",
+    "name": "Name",
+    "status": "Status",
+    "ownerEmail": "Owner email",
+    "memberCount": "Member count (optional)",
+    "submit": "Create organisation",
+    "success": "Organisation created.",
+    "errors": {
+      "required": "This field is required.",
+      "nameMin": "Name must be at least 3 characters.",
+      "nameMax": "Name must be at most 80 characters.",
+      "nameUnique": "An organisation with this name already exists.",
+      "email": "Enter a valid email address.",
+      "memberMin": "Member count cannot be negative.",
+      "formInvalid": "Fix the highlighted fields before submitting."
+    }
+  },
+  "a11y": {
+    "statusPrefix": "Status:",
+    "sortButton": "{{column}}, currently sorted {{direction}}. Activate to change sort."
+  }
+}
