@@ -12,6 +12,21 @@ Small Angular app for ops to **list**, **search/filter**, and **create** organis
 - TypeScript strict mode
 - Design tokens + `en.json` translations
 
+## Folder layout (organisations)
+
+```
+src/app/features/organisations/
+  organisation-page/     # screen shell (filter + list + create)
+  organisation-list/     # table + loading/empty/error
+  organisation-filter/   # search + status filter
+  organisation-create/   # add form
+  organisation-status/   # status badge
+data/organisations.json  # source of truth (updated on create)
+server/organisations-api.mjs
+```
+
+Each component has its own `.ts` / `.html` / `.css` — no inline templates.
+
 ## Run locally
 
 ```bash
@@ -19,14 +34,18 @@ npm install
 npm start
 ```
 
+This starts the JSON API (`:3001`) and Angular (`:4200`) together. Creates are POSTed to the API, which **rewrites** `data/organisations.json`.
+
 Open `http://localhost:4200/`.
 
 ## Scripts
 
-| Command        | Description              |
-| -------------- | ------------------------ |
-| `npm start`    | Dev server               |
-| `npm run build`| Production build         |
+| Command              | Description                          |
+| -------------------- | ------------------------------------ |
+| `npm start`          | API + Angular (with proxy)           |
+| `npm run api`        | JSON API only                        |
+| `npm run generate:data` | Rebuild `data/organisations.json` |
+| `npm run build`      | Production build                     |
 
 ## What to expect
 

@@ -1,0 +1,110 @@
+@if (phase() === 'loading') {
+  <div class="state state--loading" role="status">
+    <p>{{ 'list.loading' | t }}</p>
+  </div>
+} @else if (phase() === 'error') {
+  <div class="state state--error" role="alert">
+    <p>{{ 'list.error' | t }}</p>
+    <p class="state__detail">{{ 'list.errorHint' | t }}</p>
+    <button type="button" class="retry" (click)="retry.emit()">
+      {{ 'list.retry' | t }}
+    </button>
+  </div>
+} @else {
+  @if (phase() === 'waiting-rate-limit') {
+    <div class="hydrate" role="status">
+      <p>{{ 'list.rateLimitWait' | t }}</p>
+      <p class="hydrate__detail">
+        {{ 'list.loadingProgress' | t: { loaded: loadedCount(), total: totalCount() } }}
+      </p>
+    </div>
+  } @else if (phase() === 'hydrating' || hydrating()) {
+    <div class="hydrate" role="status">
+      <p>
+        {{ 'list.loadingProgress' | t: { loaded: loadedCount(), total: totalCount() } }}
+      </p>
+    </div>
+  }
+
+  @if (error()) {
+    <div class="state state--error state--inline" role="alert">
+      <p>{{ 'list.error' | t }}</p>
+      <p class="state__detail">{{ 'list.errorHint' | t }}</p>
+      <button type="button" class="retry" (click)="retry.emit()">
+        {{ 'list.retry' | t }}
+      </button>
+    </div>
+  }
+
+  @if (organisations().length === 0) {
+    <div class="state state--empty">
+      <p>{{ 'list.empty' | t }}</p>
+      <p class="state__detail">{{ 'list.emptyHint' | t }}</p>
+    </div>
+  } @else {
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">
+              <button
+                type="button"
+                class="sort"
+                [attr.aria-label]="sortAria('name')"
+                (click)="sortChange.emit('name')"
+              >
+                {{ 'list.columns.name' | t }}
+                @if (sortField() === 'name') {
+                  <span aria-hidden="true">{{ sortDirection() === 'asc' ? '↑' : '↓' }}</span>
+                }
+              </button>
+            </th>
+            <th scope="col">{{ 'list.columns.status' | t }}</th>
+            <th scope="col">{{ 'list.columns.members' | t }}</th>
+            <th scope="col">{{ 'list.columns.owner' | t }}</th>
+            <th scope="col">
+              <button
+                type="button"
+                class="sort"
+                [attr.aria-label]="sortAria('createdAt')"
+                (click)="sortChange.emit('createdAt')"
+              >
+                {{ 'list.columns.created' | t }}
+                @if (sortField() === 'createdAt') {
+                  <span aria-hidden="true">{{ sortDirection() === 'asc' ? '↑' : '↓' }}</span>
+                }
+              </button>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (org of organisations(); track org.key) {
+            <tr>
+              <td>
+                <span class="name" [title]="displayName(org)">{{ displayName(org) }}</span>
+              </td>
+              <td>
+                <app-organisation-status [status]="org.status" />
+              </td>
+              <td>{{ displayMembers(org.memberCount) }}</td>
+              <td>
+                <span class="owner" [title]="displayOwner(org.ownerEmail)">{{
+                  displayOwner(org.ownerEmail)
+                }}</span>
+              </td>
+              <td>
+                @if (org.createdAt; as created) {
+                  {{ created | date: 'mediumDate' }}
+                } @else if (org.createdAtRaw) {
+                  {{ 'list.invalidDate' | t }}
+                } @else {
+                  {{ 'list.unknownDate' | t }}
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+}

@@ -1,0 +1,39 @@
+<div class="page">
+  <header class="hero">
+    <h1>{{ 'app.title' | t }}</h1>
+    <p>{{ 'app.subtitle' | t }}</p>
+  </header>
+
+  <div class="layout">
+    <section class="directory" aria-labelledby="list-heading">
+      <div class="directory__header">
+        <h2 id="list-heading">{{ 'list.heading' | t }}</h2>
+      </div>
+
+      <app-organisation-filter
+        [search]="store.search()"
+        [status]="store.statusFilter()"
+        (searchChange)="onSearchChange($event)"
+        (statusChange)="onStatusChange($event)"
+        (clear)="onClearFilters()"
+      />
+
+      <app-organisation-list
+        [organisations]="store.filteredOrganisations()"
+        [phase]="store.phase()"
+        [error]="store.error()"
+        [hydrating]="store.hydrating()"
+        [loadedCount]="store.loadedCount()"
+        [totalCount]="store.totalCount()"
+        [sortField]="store.sortField()"
+        [sortDirection]="store.sortDirection()"
+        (sortChange)="onSort($event)"
+        (retry)="store.loadAll()"
+      />
+    </section>
+
+    <aside class="aside">
+      <app-organisation-create />
+    </aside>
+  </div>
+</div>

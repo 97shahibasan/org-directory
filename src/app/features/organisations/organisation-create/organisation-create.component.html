@@ -1,0 +1,69 @@
+<section class="create" aria-labelledby="create-heading">
+  <h2 id="create-heading">{{ 'create.heading' | t }}</h2>
+
+  @if (submitAttempted() && form.invalid) {
+    <p class="banner banner--danger" role="alert">
+      {{ 'create.errors.formInvalid' | t }}
+    </p>
+  }
+
+  @if (successMessage()) {
+    <p class="banner banner--success" role="status">{{ successMessage() }}</p>
+  }
+
+  <form class="form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+    <label class="field">
+      <span class="field__label">{{ 'create.name' | t }}</span>
+      <input
+        class="field__control"
+        type="text"
+        formControlName="name"
+        autocomplete="organization"
+      />
+      @if (showError('name')) {
+        <span class="field__error" role="alert">{{ nameError() }}</span>
+      }
+    </label>
+
+    <label class="field">
+      <span class="field__label">{{ 'create.status' | t }}</span>
+      <select class="field__control" formControlName="status">
+        <option value="active">{{ 'status.active' | t }}</option>
+        <option value="inactive">{{ 'status.inactive' | t }}</option>
+        <option value="suspended">{{ 'status.suspended' | t }}</option>
+      </select>
+      @if (showError('status')) {
+        <span class="field__error" role="alert">{{ 'create.errors.required' | t }}</span>
+      }
+    </label>
+
+    <label class="field">
+      <span class="field__label">{{ 'create.ownerEmail' | t }}</span>
+      <input
+        class="field__control"
+        type="email"
+        formControlName="ownerEmail"
+        autocomplete="email"
+      />
+      @if (showError('ownerEmail')) {
+        <span class="field__error" role="alert">{{ emailError() }}</span>
+      }
+    </label>
+
+    <label class="field">
+      <span class="field__label">{{ 'create.memberCount' | t }}</span>
+      <input
+        class="field__control"
+        type="number"
+        formControlName="memberCount"
+        min="0"
+        step="1"
+      />
+      @if (showError('memberCount')) {
+        <span class="field__error" role="alert">{{ 'create.errors.memberMin' | t }}</span>
+      }
+    </label>
+
+    <button class="submit" type="submit">{{ 'create.submit' | t }}</button>
+  </form>
+</section>

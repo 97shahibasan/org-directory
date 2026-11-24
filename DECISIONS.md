@@ -12,9 +12,15 @@
 - **Rejected:** Dot-only (fails “never colour alone”); icon-shape-only without text (still weak for colour-blind + SR users unless heavily engineered).
 - **Gave up:** The designer’s densest “clean table” look. Labels stay compact (`font-size-sm`) so the cost is small.
 
+## Data storage
+
+- **Chose:** Persist organisations in `data/organisations.json`. A tiny Node API (`server/organisations-api.mjs`) reads that file for list pages and **rewrites it on create**. Angular cannot update a JSON file from the browser alone.
+- **Rejected:** In-memory-only creates (lost on refresh); pretending `HttpClient.put` to `/assets` updates disk.
+
 ## Messy fixture handling
 
-- **Chose:** Serve the fixture **as-is**, then normalise at the boundary (`normalise-organisation.ts`) into a typed domain model.
+- **Chose:** Keep quirks in the JSON file **as-is**, then normalise at the boundary (`normalise-organisation.ts`) into a typed domain model.
+
 - Handling highlights:
   - Empty / `null` names → placeholder copy from i18n; sort unnamed last.
   - Status casing + typo `actve` → mapped to `active`; anything else → `unknown`.

@@ -1,10 +1,15 @@
-import { OrganisationRaw } from '../models/organisation';
-
 /**
- * Deliberately messy seed data — do not "clean" before serving.
- * Every quirk is intentional (empty names, wrong types, duplicate ids, typos, etc.).
+ * One-shot generator: builds data/organisations.json from the messy seed quirks.
+ * Run: node scripts/generate-organisations-json.mjs
  */
-export const FIXTURE_SEED: OrganisationRaw[] = [
+import { writeFileSync, mkdirSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
+const outPath = join(__dirname, '..', 'data', 'organisations.json');
+
+const FIXTURE_SEED = [
   {
     id: 1,
     name: 'Northwind Traders',
@@ -71,46 +76,17 @@ export const FIXTURE_SEED: OrganisationRaw[] = [
 ];
 
 const PREFIXES = [
-  'Acme',
-  'Pioneer',
-  'Summit',
-  'Horizon',
-  'Cobalt',
-  'Cedar',
-  'Maple',
-  'River',
-  'Atlas',
-  'Beacon',
-  'Copper',
-  'Delta',
-  'Echo',
-  'Falcon',
-  'Granite',
-  'Harbor',
+  'Acme', 'Pioneer', 'Summit', 'Horizon', 'Cobalt', 'Cedar', 'Maple', 'River',
+  'Atlas', 'Beacon', 'Copper', 'Delta', 'Echo', 'Falcon', 'Granite', 'Harbor',
 ];
-
 const SUFFIXES = [
-  'Labs',
-  'Systems',
-  'Group',
-  'Partners',
-  'Holdings',
-  'Ventures',
-  'Works',
-  'Collective',
-  'Industries',
-  'Solutions',
+  'Labs', 'Systems', 'Group', 'Partners', 'Holdings', 'Ventures', 'Works',
+  'Collective', 'Industries', 'Solutions',
 ];
-
 const STATUSES = ['active', 'ACTIVE', 'Active', 'inactive', 'suspended', 'actve', null, 'pending'];
 
-/**
- * Expand the seed to ~140 records while preserving the original quirks
- * and introducing controlled variations (duplicate ids, type noise, etc.).
- */
-export function buildFixtureDataset(targetCount = 140): OrganisationRaw[] {
-  const items: OrganisationRaw[] = FIXTURE_SEED.map((item) => structuredClone(item));
-
+function buildFixtureDataset(targetCount = 140) {
+  const items = FIXTURE_SEED.map((item) => structuredClone(item));
   let nextId = 100;
   let i = 0;
 
@@ -119,12 +95,7 @@ export function buildFixtureDataset(targetCount = 140): OrganisationRaw[] {
     const variant = structuredClone(seed);
     const batch = Math.floor(i / FIXTURE_SEED.length);
 
-    // Most records get unique ids; every 11th deliberately reuses an id.
-    if (i % 11 === 0) {
-      variant.id = seed.id;
-    } else {
-      variant.id = nextId++;
-    }
+    variant.id = i % 11 === 0 ? seed.id : nextId++;
 
     const prefix = PREFIXES[i % PREFIXES.length];
     const suffix = SUFFIXES[i % SUFFIXES.length];
@@ -132,7 +103,6 @@ export function buildFixtureDataset(targetCount = 140): OrganisationRaw[] {
     if (typeof seed.name === 'string' && seed.name.trim() !== '') {
       variant.name = `${prefix} ${suffix} ${batch + 1}`;
     } else if (seed.name === null) {
-      // Keep null names periodically
       variant.name = i % 17 === 0 ? null : `${prefix} Untitled ${batch + 1}`;
     } else if (seed.name === '') {
       variant.name = i % 13 === 0 ? '' : `${prefix} Blank-Seed ${batch + 1}`;
@@ -140,33 +110,18 @@ export function buildFixtureDataset(targetCount = 140): OrganisationRaw[] {
 
     variant.status = STATUSES[i % STATUSES.length];
 
-    // Mix memberCount types the way production feeds do
-    if (i % 9 === 0) {
-      variant.memberCount = String((i % 50) + 1);
-    } else if (i % 15 === 0) {
-      variant.memberCount = -3;
-    } else if (i % 19 === 0) {
-      variant.memberCount = null;
-    } else {
-      variant.memberCount = (i % 80) + (i % 5);
-    }
+    if (i % 9 === 0) variant.memberCount = String((i % 50) + 1);
+    else if (i % 15 === 0) variant.memberCount = -3;
+    else if (i % 19 === 0) variant.memberCount = null;
+    else variant.memberCount = (i % 80) + (i % 5);
 
-    if (i % 12 === 0) {
-      variant.owner = null;
-    } else if (i % 14 === 0) {
-      variant.owner = { email: 'broken-address' };
-    } else {
-      variant.owner = {
-        email: `ops${i}@${prefix.toLowerCase()}.example`,
-      };
-    }
+    if (i % 12 === 0) variant.owner = null;
+    else if (i % 14 === 0) variant.owner = { email: 'broken-address' };
+    else variant.owner = { email: `ops${i}@${prefix.toLowerCase()}.example` };
 
-    // Mix ISO strings, epoch millis, and invalid dates
-    if (i % 10 === 0) {
-      variant.createdAt = Date.UTC(2023, i % 12, (i % 27) + 1);
-    } else if (i % 16 === 0) {
-      variant.createdAt = 'tomorrow-ish';
-    } else {
+    if (i % 10 === 0) variant.createdAt = Date.UTC(2023, i % 12, (i % 27) + 1);
+    else if (i % 16 === 0) variant.createdAt = 'tomorrow-ish';
+    else {
       const year = 2022 + (i % 4);
       const month = String((i % 12) + 1).padStart(2, '0');
       const day = String((i % 28) + 1).padStart(2, '0');
@@ -179,3 +134,8 @@ export function buildFixtureDataset(targetCount = 140): OrganisationRaw[] {
 
   return items;
 }
+
+mkdirSync(dirname(outPath), { recursive: true });
+const data = buildFixtureDataset(140);
+writeFileSync(outPath, JSON.stringify(data, null, 2), 'utf8');
+console.log(`Wrote ${data.length} organisations to ${outPath}`);

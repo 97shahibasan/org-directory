@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
-import { OrganisationDirectoryComponent } from './features/organisations/organisation-directory.component';
+import { OrganisationPageComponent } from './features/organisations/organisation-page/organisation-page.component';
 
 export const routes: Routes = [
-  { path: '', component: OrganisationDirectoryComponent },
+  { path: '', component: OrganisationPageComponent },
   { path: '**', redirectTo: '' },
 ];

@@ -1,43 +1,3 @@
-.page {
-  max-width: var(--content-max-width);
-  margin: 0 auto;
-  padding: var(--space-6) var(--space-4) var(--space-8);
-}
-
-.hero {
-  margin-bottom: var(--space-6);
-}
-
-.hero h1 {
-  margin: 0 0 var(--space-2);
-  font-size: var(--font-size-xl);
-  line-height: var(--line-height-tight);
-  color: var(--color-brand);
-}
-
-.hero p {
-  margin: 0;
-  max-width: 40rem;
-  color: var(--color-text-muted);
-}
-
-.layout {
-  display: grid;
-  gap: var(--space-6);
-}
-
-@media (min-width: 960px) {
-  .layout {
-    grid-template-columns: minmax(0, 1fr) 20rem;
-    align-items: start;
-  }
-}
-
-.directory__header h2 {
-  margin: 0;
-  font-size: var(--font-size-lg);
-}
-
 .state {
   padding: var(--space-6);
   border-radius: var(--radius-md);
@@ -63,6 +23,15 @@
   margin-bottom: var(--space-4);
 }
 
+.state p {
+  margin: 0;
+}
+
+.state__detail {
+  margin-top: var(--space-2) !important;
+  font-size: var(--font-size-sm);
+}
+
 .hydrate {
   margin-bottom: var(--space-4);
   padding: var(--space-3) var(--space-4);
@@ -78,15 +47,6 @@
 
 .hydrate__detail {
   margin-top: var(--space-1) !important;
-}
-
-.state p {
-  margin: 0;
-}
-
-.state__detail {
-  margin-top: var(--space-2) !important;
-  font-size: var(--font-size-sm);
 }
 
 .retry {
