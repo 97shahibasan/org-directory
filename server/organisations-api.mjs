@@ -12,7 +12,9 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DATA_PATH = join(__dirname, '..', 'data', 'organisations.json');
+const PUBLIC_DATA_PATH = join(__dirname, '..', 'public', 'data', 'organisations.json');
 const PORT = Number(process.env.API_PORT || 3001);
+
 const PAGE_SIZE_DEFAULT = 25;
 const FAILURE_RATE = 0.15;
 const MIN_DELAY_MS = 400;
@@ -27,8 +29,12 @@ function readAll() {
 }
 
 function writeAll(items) {
-  writeFileSync(DATA_PATH, JSON.stringify(items, null, 2), 'utf8');
+  const json = JSON.stringify(items, null, 2);
+  writeFileSync(DATA_PATH, json, 'utf8');
+  // Keep the file Angular serves in sync so reloads show new rows.
+  writeFileSync(PUBLIC_DATA_PATH, json, 'utf8');
 }
+
 
 function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));

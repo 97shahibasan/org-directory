@@ -14,13 +14,7 @@ import {
 } from '../utils/normalise-organisation';
 import { OrganisationApiService } from './organisation-api.service';
 
-export type LoadPhase =
-  | 'idle'
-  | 'loading'
-  | 'hydrating'
-  | 'waiting-rate-limit'
-  | 'ready'
-  | 'error';
+export type LoadPhase = 'idle' | 'loading' | 'ready' | 'error';
 
 @Injectable({ providedIn: 'root' })
 export class OrganisationStore {
@@ -29,23 +23,15 @@ export class OrganisationStore {
   private readonly organisationsSignal = signal<Organisation[]>([]);
   private readonly phaseSignal = signal<LoadPhase>('idle');
   private readonly errorSignal = signal<string | null>(null);
-  private readonly loadedCountSignal = signal(0);
-  private readonly totalCountSignal = signal(0);
-  private readonly hydratingSignal = signal(false);
 
   private readonly searchSignal = signal('');
   private readonly statusFilterSignal = signal<OrganisationStatus | 'all'>('all');
   private readonly sortFieldSignal = signal<SortField>('name');
   private readonly sortDirectionSignal = signal<SortDirection>('asc');
 
-  private loadGeneration = 0;
-
   readonly organisations = this.organisationsSignal.asReadonly();
   readonly phase = this.phaseSignal.asReadonly();
   readonly error = this.errorSignal.asReadonly();
-  readonly loadedCount = this.loadedCountSignal.asReadonly();
-  readonly totalCount = this.totalCountSignal.asReadonly();
-  readonly hydrating = this.hydratingSignal.asReadonly();
   readonly search = this.searchSignal.asReadonly();
   readonly statusFilter = this.statusFilterSignal.asReadonly();
   readonly sortField = this.sortFieldSignal.asReadonly();
@@ -118,68 +104,15 @@ export class OrganisationStore {
   }
 
   async loadAll(): Promise<void> {
-    const generation = ++this.loadGeneration;
     this.phaseSignal.set('loading');
     this.errorSignal.set(null);
-    this.loadedCountSignal.set(0);
-    this.totalCountSignal.set(0);
-    this.hydratingSignal.set(false);
-    this.organisationsSignal.set([]);
     resetOrganisationKeyCounter();
 
-    const onRateLimitWait = (): void => {
-      if (generation !== this.loadGeneration) {
-        return;
-      }
-      this.phaseSignal.set('waiting-rate-limit');
-    };
-
     try {
-      const first = await this.withPageRetry(1, onRateLimitWait);
-      if (generation !== this.loadGeneration) {
-        return;
-      }
-
-      const collected = normaliseOrganisations(first.items);
-      this.organisationsSignal.set(collected);
-      this.loadedCountSignal.set(collected.length);
-      this.totalCountSignal.set(first.total);
-      this.phaseSignal.set('ready');
-      this.hydratingSignal.set(first.totalPages > 1);
-
-      for (let page = 2; page <= first.totalPages; page++) {
-        if (generation !== this.loadGeneration) {
-          return;
-        }
-        // Stay interactive while remaining pages arrive.
-        if (this.phaseSignal() !== 'waiting-rate-limit') {
-          this.phaseSignal.set('hydrating');
-        }
-
-        const next = await this.withPageRetry(page, onRateLimitWait);
-        if (generation !== this.loadGeneration) {
-          return;
-        }
-
-        collected.push(...normaliseOrganisations(next.items));
-        this.organisationsSignal.set([...collected]);
-        this.loadedCountSignal.set(collected.length);
-        this.totalCountSignal.set(next.total);
-      }
-
-      this.hydratingSignal.set(false);
+      const raw = await this.api.getAll();
+      this.organisationsSignal.set(normaliseOrganisations(raw));
       this.phaseSignal.set('ready');
     } catch {
-      if (generation !== this.loadGeneration) {
-        return;
-      }
-      // If we already showed some rows, keep them and surface a soft error banner via phase.
-      if (this.organisationsSignal().length > 0) {
-        this.hydratingSignal.set(false);
-        this.errorSignal.set('ORGANISATION_LIST_FAILED');
-        this.phaseSignal.set('ready');
-        return;
-      }
       this.organisationsSignal.set([]);
       this.errorSignal.set('ORGANISATION_LIST_FAILED');
       this.phaseSignal.set('error');
@@ -190,25 +123,7 @@ export class OrganisationStore {
     const raw = await this.api.create(input);
     const org = normaliseOrganisation(raw);
     this.organisationsSignal.update((list) => [org, ...list]);
-    this.totalCountSignal.update((n) => n + 1);
-    this.loadedCountSignal.update((n) => n + 1);
     return org;
-  }
-
-  private async withPageRetry(
-    page: number,
-    onRateLimitWait: () => void,
-    attempts = 3
-  ): Promise<Awaited<ReturnType<OrganisationApiService['listPage']>>> {
-    let lastError: unknown;
-    for (let i = 0; i < attempts; i++) {
-      try {
-        return await this.api.listPage(page, { onRateLimitWait });
-      } catch (err) {
-        lastError = err;
-      }
-    }
-    throw lastError;
   }
 }
 

@@ -63,16 +63,33 @@ h2 {
   color: var(--color-success);
 }
 
+.actions {
+  display: flex;
+  gap: var(--space-3);
+  justify-content: flex-end;
+}
+
+.cancel,
 .submit {
   height: var(--control-height);
-  border: 0;
   border-radius: var(--radius-sm);
-  background: var(--color-brand);
-  color: var(--color-surface-raised);
   cursor: pointer;
   padding-inline: var(--space-4);
+}
+
+.cancel {
+  border: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text);
+}
+
+.submit {
+  border: 0;
+  background: var(--color-brand);
+  color: var(--color-surface-raised);
 }
 
 .submit:hover {
   background: var(--color-brand-hover);
 }
+

@@ -8,6 +8,8 @@ import { fileURLToPath } from 'node:url';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const outPath = join(__dirname, '..', 'data', 'organisations.json');
+const publicOutPath = join(__dirname, '..', 'public', 'data', 'organisations.json');
+
 
 const FIXTURE_SEED = [
   {
@@ -136,6 +138,11 @@ function buildFixtureDataset(targetCount = 140) {
 }
 
 mkdirSync(dirname(outPath), { recursive: true });
+mkdirSync(dirname(publicOutPath), { recursive: true });
 const data = buildFixtureDataset(140);
-writeFileSync(outPath, JSON.stringify(data, null, 2), 'utf8');
+const json = JSON.stringify(data, null, 2);
+writeFileSync(outPath, json, 'utf8');
+writeFileSync(publicOutPath, json, 'utf8');
 console.log(`Wrote ${data.length} organisations to ${outPath}`);
+console.log(`Wrote ${data.length} organisations to ${publicOutPath}`);
+

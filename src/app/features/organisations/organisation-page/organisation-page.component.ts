@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { OrganisationStatus, SortField } from '../../../core/models/organisation';
 import { OrganisationStore } from '../../../core/services/organisation.store';
@@ -7,10 +7,6 @@ import { OrganisationCreateComponent } from '../organisation-create/organisation
 import { OrganisationFilterComponent } from '../organisation-filter/organisation-filter.component';
 import { OrganisationListComponent } from '../organisation-list/organisation-list.component';
 
-/**
- * Single organisation screen: filter + list + create.
- * Child components own their own HTML/CSS files.
- */
 @Component({
   selector: 'app-organisation-page',
   standalone: true,
@@ -28,6 +24,8 @@ export class OrganisationPageComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
 
+  readonly createDialogOpen = signal(false);
+
   ngOnInit(): void {
     const params = this.route.snapshot.queryParamMap;
     this.store.applyUrlState({
@@ -37,6 +35,18 @@ export class OrganisationPageComponent implements OnInit {
       dir: params.get('dir'),
     });
     void this.store.loadAll();
+  }
+
+  openCreateDialog(): void {
+    this.createDialogOpen.set(true);
+  }
+
+  closeCreateDialog(): void {
+    this.createDialogOpen.set(false);
+  }
+
+  onCreated(): void {
+    this.createDialogOpen.set(false);
   }
 
   onSearchChange(value: string): void {

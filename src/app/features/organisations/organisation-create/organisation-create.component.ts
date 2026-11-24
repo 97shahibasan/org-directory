@@ -31,8 +31,10 @@ export class OrganisationCreateComponent {
   private readonly i18n = inject(TranslationService);
 
   readonly created = output<void>();
+  readonly cancelled = output<void>();
   readonly submitAttempted = signal(false);
   readonly successMessage = signal<string | null>(null);
+
 
   readonly form = this.fb.nonNullable.group({
     name: this.fb.nonNullable.control('', {

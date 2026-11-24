@@ -64,6 +64,12 @@
       }
     </label>
 
-    <button class="submit" type="submit">{{ 'create.submit' | t }}</button>
+    <div class="actions">
+      <button class="cancel" type="button" (click)="cancelled.emit()">
+        {{ 'create.cancel' | t }}
+      </button>
+      <button class="submit" type="submit">{{ 'create.submit' | t }}</button>
+    </div>
   </form>
 </section>
+

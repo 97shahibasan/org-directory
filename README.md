@@ -34,18 +34,25 @@ npm install
 npm start
 ```
 
-This starts the JSON API (`:3001`) and Angular (`:4200`) together. Creates are POSTed to the API, which **rewrites** `data/organisations.json`.
+List data loads from `public/data/organisations.json` (works with plain `ng serve`).
 
-Open `http://localhost:4200/`.
+Open `http://localhost:4200/`. Click **Add organisation** to open the create dialog.
+
+To also **write** new rows back into the JSON file on disk:
+
+```bash
+npm run start:full
+```
 
 ## Scripts
 
-| Command              | Description                          |
-| -------------------- | ------------------------------------ |
-| `npm start`          | API + Angular (with proxy)           |
-| `npm run api`        | JSON API only                        |
-| `npm run generate:data` | Rebuild `data/organisations.json` |
-| `npm run build`      | Production build                     |
+| Command                 | Description                                      |
+| ----------------------- | ------------------------------------------------ |
+| `npm start`             | Angular only (reads JSON from `public/data`)     |
+| `npm run start:full`    | API + Angular (create updates the JSON file)     |
+| `npm run api`           | JSON API only                                    |
+| `npm run generate:data` | Rebuild organisations.json                       |
+| `npm run build`         | Production build                                 |
 
 ## What to expect
 

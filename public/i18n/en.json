@@ -27,7 +27,8 @@
     "empty": "No organisations match your filters.",
     "emptyHint": "Try clearing the search or status filter.",
     "error": "We could not load organisations.",
-    "errorHint": "The directory API failed. You can try again.",
+    "errorHint": "Could not read organisations.json. You can try again.",
+
     "retry": "Try again",
     "rateLimitWait": "Waiting for the API rate limit before fetching the next page…",
     "unknownName": "Unnamed organisation",
@@ -56,7 +57,10 @@
     "ownerEmail": "Owner email",
     "memberCount": "Member count (optional)",
     "submit": "Create organisation",
+    "cancel": "Cancel",
+    "close": "Close dialog",
     "success": "Organisation created.",
+
     "errors": {
       "required": "This field is required.",
       "nameMin": "Name must be at least 3 characters.",

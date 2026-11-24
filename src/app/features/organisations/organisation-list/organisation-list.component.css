@@ -19,10 +19,6 @@
   color: var(--color-danger);
 }
 
-.state--inline {
-  margin-bottom: var(--space-4);
-}
-
 .state p {
   margin: 0;
 }
@@ -30,23 +26,6 @@
 .state__detail {
   margin-top: var(--space-2) !important;
   font-size: var(--font-size-sm);
-}
-
-.hydrate {
-  margin-bottom: var(--space-4);
-  padding: var(--space-3) var(--space-4);
-  border-radius: var(--radius-sm);
-  background: var(--color-info-bg);
-  color: var(--color-info);
-  font-size: var(--font-size-sm);
-}
-
-.hydrate p {
-  margin: 0;
-}
-
-.hydrate__detail {
-  margin-top: var(--space-1) !important;
 }
 
 .retry {

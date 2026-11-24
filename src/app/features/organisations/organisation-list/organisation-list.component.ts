@@ -19,9 +19,6 @@ export class OrganisationListComponent {
   readonly organisations = input.required<Organisation[]>();
   readonly phase = input.required<LoadPhase>();
   readonly error = input<string | null>(null);
-  readonly hydrating = input(false);
-  readonly loadedCount = input(0);
-  readonly totalCount = input(0);
   readonly sortField = input<SortField>('name');
   readonly sortDirection = input<SortDirection>('asc');
 
