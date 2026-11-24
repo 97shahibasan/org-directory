@@ -5,6 +5,11 @@
     <p class="error-banner">{{ 'create.errors.formInvalid' | t }}</p>
   }
 
+  @if (saveFailed()) {
+    <p class="error-banner">{{ 'create.errors.saveFailed' | t }}</p>
+  }
+
+
   <form [formGroup]="form" (ngSubmit)="onSubmit()">
     <label class="field">
       <span>{{ 'create.name' | t }}</span>
@@ -52,7 +57,10 @@
       <button type="button" class="cancel" (click)="cancelled.emit()">
         {{ 'create.cancel' | t }}
       </button>
-      <button type="submit" class="save">{{ 'create.submit' | t }}</button>
+      <button type="submit" class="save" [disabled]="saving()">
+        {{ 'create.submit' | t }}
+      </button>
+
     </div>
   </form>
 </section>

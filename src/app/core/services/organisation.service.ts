@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable, computed, inject, signal } from '@angular/core';
+import { Observable, tap } from 'rxjs';
 
 import { Organisation } from '../models/organisation';
 
@@ -7,16 +8,13 @@ import { Organisation } from '../models/organisation';
 export class OrganisationService {
   private readonly http = inject(HttpClient);
 
-  /** Full list from JSON. */
   readonly organisations = signal<Organisation[]>([]);
   readonly loading = signal(false);
   readonly error = signal(false);
 
-  /** Filters */
   readonly search = signal('');
   readonly statusFilter = signal('all');
 
-  /** List after search + status filter. */
   readonly filteredList = computed(() => {
     const q = this.search().trim().toLowerCase();
     const status = this.statusFilter();
@@ -28,15 +26,14 @@ export class OrganisationService {
     });
   });
 
-  /** Load data/organisations.json from the public folder. */
+  /** Load list from API (reads the JSON file on disk). */
   load(): void {
     this.loading.set(true);
     this.error.set(false);
 
-    this.http.get<unknown[]>('data/organisations.json').subscribe({
+    this.http.get<unknown[]>('/api/organisations').subscribe({
       next: (rows) => {
-        const list = (rows || []).map((row, index) => this.toOrganisation(row, index));
-        this.organisations.set(list);
+        this.organisations.set((rows || []).map((row, i) => this.toOrganisation(row, i)));
         this.loading.set(false);
       },
       error: () => {
@@ -47,29 +44,28 @@ export class OrganisationService {
     });
   }
 
-  /** Add a new organisation to the top of the list. */
-  add(org: { name: string; status: string; ownerEmail: string; memberCount: number | null }): void {
-    const nextId = Date.now();
-    const newOrg: Organisation = {
-      id: nextId,
-      name: org.name,
-      status: org.status,
-      members: org.memberCount ?? 0,
-      owner: org.ownerEmail,
-      created: new Date().toLocaleDateString(),
-    };
-
-    this.organisations.update((list) => [newOrg, ...list]);
-
-    // Try to save into the JSON file via local API (optional).
-    this.http
-      .post('/api/organisations', {
+  /**
+   * POST to API → server writes organisations.json → then update the list.
+   */
+  add(org: {
+    name: string;
+    status: string;
+    ownerEmail: string;
+    memberCount: number | null;
+  }): Observable<unknown> {
+    return this.http
+      .post<unknown>('/api/organisations', {
         name: org.name,
         status: org.status,
         ownerEmail: org.ownerEmail,
         memberCount: org.memberCount,
       })
-      .subscribe({ error: () => undefined });
+      .pipe(
+        tap((created) => {
+          const newOrg = this.toOrganisation(created, 0);
+          this.organisations.update((list) => [newOrg, ...list]);
+        })
+      );
   }
 
   nameExists(name: string): boolean {
@@ -77,7 +73,6 @@ export class OrganisationService {
     return this.organisations().some((o) => o.name.trim().toLowerCase() === needle);
   }
 
-  /** Turn messy JSON rows into a simple object the UI can show. */
   private toOrganisation(row: unknown, index: number): Organisation {
     const r = (row || {}) as Record<string, unknown>;
     const owner = r['owner'] as { email?: unknown } | null | undefined;

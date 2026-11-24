@@ -68,8 +68,10 @@
       "nameUnique": "An organisation with this name already exists.",
       "email": "Enter a valid email address.",
       "memberMin": "Member count cannot be negative.",
-      "formInvalid": "Fix the highlighted fields before submitting."
+      "formInvalid": "Fix the highlighted fields before submitting.",
+      "saveFailed": "Could not save to the JSON file. Make sure you started the app with npm start (API + Angular)."
     }
+
   },
   "a11y": {
     "statusPrefix": "Status:",

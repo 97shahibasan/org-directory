@@ -19,8 +19,9 @@ export class OrganisationCreateComponent {
   readonly cancelled = output<void>();
 
   readonly triedSubmit = signal(false);
+  readonly saving = signal(false);
+  readonly saveFailed = signal(false);
 
-  // Errors are only shown after blur/submit (see showError), not while typing.
   readonly form = this.fb.nonNullable.group({
     name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(80)]],
     status: ['active', Validators.required],
@@ -28,9 +29,6 @@ export class OrganisationCreateComponent {
     memberCount: this.fb.control<number | null>(null),
   });
 
-
-
-  /** Show error only after blur or after submit click. */
   showError(field: 'name' | 'status' | 'ownerEmail' | 'memberCount'): boolean {
     const control = this.form.controls[field];
     return control.invalid && (control.touched || this.triedSubmit());
@@ -43,6 +41,7 @@ export class OrganisationCreateComponent {
 
   onSubmit(): void {
     this.triedSubmit.set(true);
+    this.saveFailed.set(false);
     this.form.markAllAsTouched();
 
     if (this.form.invalid || this.nameTaken()) {
@@ -50,13 +49,24 @@ export class OrganisationCreateComponent {
     }
 
     const value = this.form.getRawValue();
-    this.orgService.add({
-      name: value.name.trim(),
-      status: value.status,
-      ownerEmail: value.ownerEmail.trim(),
-      memberCount: value.memberCount,
-    });
+    this.saving.set(true);
 
-    this.saved.emit();
+    this.orgService
+      .add({
+        name: value.name.trim(),
+        status: value.status,
+        ownerEmail: value.ownerEmail.trim(),
+        memberCount: value.memberCount,
+      })
+      .subscribe({
+        next: () => {
+          this.saving.set(false);
+          this.saved.emit();
+        },
+        error: () => {
+          this.saving.set(false);
+          this.saveFailed.set(true);
+        },
+      });
   }
 }

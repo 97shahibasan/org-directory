@@ -22,4 +22,11 @@ npm install
 npm start
 ```
 
+This starts **both**:
+- API on `:3001` (reads/writes `data/organisations.json`)
+- Angular on `:4200`
+
+When you add an organisation, it is saved into the JSON file.
+
 Open http://localhost:4200/
+

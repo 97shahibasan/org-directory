@@ -68,3 +68,8 @@ h2 {
   background: var(--color-brand);
   color: var(--color-surface-raised);
 }
+
+.save:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
