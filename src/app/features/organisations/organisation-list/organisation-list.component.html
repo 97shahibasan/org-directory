@@ -1,80 +1,32 @@
-@if (phase() === 'loading') {
-  <div class="state state--loading" role="status">
-    <p>{{ 'list.loading' | t }}</p>
-  </div>
-} @else if (phase() === 'error') {
-  <div class="state state--error" role="alert">
+@if (orgService.loading()) {
+  <div class="box box--loading">{{ 'list.loading' | t }}</div>
+} @else if (orgService.error()) {
+  <div class="box box--error">
     <p>{{ 'list.error' | t }}</p>
-    <p class="state__detail">{{ 'list.errorHint' | t }}</p>
-    <button type="button" class="retry" (click)="retry.emit()">
-      {{ 'list.retry' | t }}
-    </button>
+    <button type="button" (click)="orgService.load()">{{ 'list.retry' | t }}</button>
   </div>
-} @else if (organisations().length === 0) {
-  <div class="state state--empty">
-    <p>{{ 'list.empty' | t }}</p>
-    <p class="state__detail">{{ 'list.emptyHint' | t }}</p>
-  </div>
+} @else if (orgService.filteredList().length === 0) {
+  <div class="box box--empty">{{ 'list.empty' | t }}</div>
 } @else {
   <div class="table-wrap">
-    <table class="table">
+    <table>
       <thead>
         <tr>
-          <th scope="col">
-            <button
-              type="button"
-              class="sort"
-              [attr.aria-label]="sortAria('name')"
-              (click)="sortChange.emit('name')"
-            >
-              {{ 'list.columns.name' | t }}
-              @if (sortField() === 'name') {
-                <span aria-hidden="true">{{ sortDirection() === 'asc' ? '↑' : '↓' }}</span>
-              }
-            </button>
-          </th>
-          <th scope="col">{{ 'list.columns.status' | t }}</th>
-          <th scope="col">{{ 'list.columns.members' | t }}</th>
-          <th scope="col">{{ 'list.columns.owner' | t }}</th>
-          <th scope="col">
-            <button
-              type="button"
-              class="sort"
-              [attr.aria-label]="sortAria('createdAt')"
-              (click)="sortChange.emit('createdAt')"
-            >
-              {{ 'list.columns.created' | t }}
-              @if (sortField() === 'createdAt') {
-                <span aria-hidden="true">{{ sortDirection() === 'asc' ? '↑' : '↓' }}</span>
-              }
-            </button>
-          </th>
+          <th>{{ 'list.columns.name' | t }}</th>
+          <th>{{ 'list.columns.status' | t }}</th>
+          <th>{{ 'list.columns.members' | t }}</th>
+          <th>{{ 'list.columns.owner' | t }}</th>
+          <th>{{ 'list.columns.created' | t }}</th>
         </tr>
       </thead>
       <tbody>
-        @for (org of organisations(); track org.key) {
+        @for (org of orgService.filteredList(); track org.id + '-' + org.name) {
           <tr>
-            <td>
-              <span class="name" [title]="displayName(org)">{{ displayName(org) }}</span>
-            </td>
-            <td>
-              <app-organisation-status [status]="org.status" />
-            </td>
-            <td>{{ displayMembers(org.memberCount) }}</td>
-            <td>
-              <span class="owner" [title]="displayOwner(org.ownerEmail)">{{
-                displayOwner(org.ownerEmail)
-              }}</span>
-            </td>
-            <td>
-              @if (org.createdAt; as created) {
-                {{ created | date: 'mediumDate' }}
-              } @else if (org.createdAtRaw) {
-                {{ 'list.invalidDate' | t }}
-              } @else {
-                {{ 'list.unknownDate' | t }}
-              }
-            </td>
+            <td class="name" [title]="org.name">{{ org.name }}</td>
+            <td><app-organisation-status [status]="org.status" /></td>
+            <td>{{ org.members }}</td>
+            <td class="owner" [title]="org.owner">{{ org.owner }}</td>
+            <td>{{ org.created }}</td>
           </tr>
         }
       </tbody>

@@ -1,61 +1,27 @@
 <div class="page">
   <header class="hero">
-    <div class="hero__text">
+    <div>
       <h1>{{ 'app.title' | t }}</h1>
       <p>{{ 'app.subtitle' | t }}</p>
     </div>
-    <button type="button" class="hero__add" (click)="openCreateDialog()">
+
+    <button type="button" class="add-btn" (click)="openDialog()">
       {{ 'nav.create' | t }}
     </button>
   </header>
 
-  <section class="directory" aria-labelledby="list-heading">
-    <div class="directory__header">
-      <h2 id="list-heading">{{ 'list.heading' | t }}</h2>
-    </div>
+  <h2>{{ 'list.heading' | t }}</h2>
 
-    <app-organisation-filter
-      [search]="store.search()"
-      [status]="store.statusFilter()"
-      (searchChange)="onSearchChange($event)"
-      (statusChange)="onStatusChange($event)"
-      (clear)="onClearFilters()"
-    />
+  <app-organisation-filter />
 
-    <app-organisation-list
-      [organisations]="store.filteredOrganisations()"
-      [phase]="store.phase()"
-      [error]="store.error()"
-      [sortField]="store.sortField()"
-      [sortDirection]="store.sortDirection()"
-      (sortChange)="onSort($event)"
-      (retry)="store.loadAll()"
-    />
-  </section>
+  <app-organisation-list />
 </div>
 
-@if (createDialogOpen()) {
-  <div
-    class="dialog-backdrop"
-    role="presentation"
-    (click)="closeCreateDialog()"
-  >
-    <div
-      class="dialog"
-      role="dialog"
-      aria-modal="true"
-      [attr.aria-label]="'create.heading' | t"
-      (click)="$event.stopPropagation()"
-    >
-      <button
-        type="button"
-        class="dialog__close"
-        [attr.aria-label]="'create.close' | t"
-        (click)="closeCreateDialog()"
-      >
-        ×
-      </button>
-      <app-organisation-create (created)="onCreated()" (cancelled)="closeCreateDialog()" />
+@if (showDialog()) {
+  <div class="backdrop" (click)="closeDialog()">
+    <div class="dialog" (click)="$event.stopPropagation()">
+      <button type="button" class="close-btn" (click)="closeDialog()">×</button>
+      <app-organisation-create (saved)="closeDialog()" (cancelled)="closeDialog()" />
     </div>
   </div>
 }

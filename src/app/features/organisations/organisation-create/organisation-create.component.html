@@ -1,75 +1,58 @@
-<section class="create" aria-labelledby="create-heading">
-  <h2 id="create-heading">{{ 'create.heading' | t }}</h2>
+<section class="create">
+  <h2>{{ 'create.heading' | t }}</h2>
 
-  @if (submitAttempted() && form.invalid) {
-    <p class="banner banner--danger" role="alert">
-      {{ 'create.errors.formInvalid' | t }}
-    </p>
+  @if (triedSubmit() && (form.invalid || nameTaken())) {
+    <p class="error-banner">{{ 'create.errors.formInvalid' | t }}</p>
   }
 
-  @if (successMessage()) {
-    <p class="banner banner--success" role="status">{{ successMessage() }}</p>
-  }
-
-  <form class="form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
     <label class="field">
-      <span class="field__label">{{ 'create.name' | t }}</span>
-      <input
-        class="field__control"
-        type="text"
-        formControlName="name"
-        autocomplete="organization"
-      />
-      @if (showError('name')) {
-        <span class="field__error" role="alert">{{ nameError() }}</span>
+      <span>{{ 'create.name' | t }}</span>
+      <input type="text" formControlName="name" />
+      @if (showError('name') && form.controls.name.hasError('required')) {
+        <small>{{ 'create.errors.required' | t }}</small>
+      }
+      @if (showError('name') && form.controls.name.hasError('minlength')) {
+        <small>{{ 'create.errors.nameMin' | t }}</small>
+      }
+      @if (showError('name') && form.controls.name.hasError('maxlength')) {
+        <small>{{ 'create.errors.nameMax' | t }}</small>
+      }
+      @if ((showError('name') || triedSubmit()) && nameTaken()) {
+        <small>{{ 'create.errors.nameUnique' | t }}</small>
       }
     </label>
 
     <label class="field">
-      <span class="field__label">{{ 'create.status' | t }}</span>
-      <select class="field__control" formControlName="status">
+      <span>{{ 'create.status' | t }}</span>
+      <select formControlName="status">
         <option value="active">{{ 'status.active' | t }}</option>
         <option value="inactive">{{ 'status.inactive' | t }}</option>
         <option value="suspended">{{ 'status.suspended' | t }}</option>
       </select>
-      @if (showError('status')) {
-        <span class="field__error" role="alert">{{ 'create.errors.required' | t }}</span>
+    </label>
+
+    <label class="field">
+      <span>{{ 'create.ownerEmail' | t }}</span>
+      <input type="email" formControlName="ownerEmail" />
+      @if (showError('ownerEmail') && form.controls.ownerEmail.hasError('required')) {
+        <small>{{ 'create.errors.required' | t }}</small>
+      }
+      @if (showError('ownerEmail') && form.controls.ownerEmail.hasError('email')) {
+        <small>{{ 'create.errors.email' | t }}</small>
       }
     </label>
 
     <label class="field">
-      <span class="field__label">{{ 'create.ownerEmail' | t }}</span>
-      <input
-        class="field__control"
-        type="email"
-        formControlName="ownerEmail"
-        autocomplete="email"
-      />
-      @if (showError('ownerEmail')) {
-        <span class="field__error" role="alert">{{ emailError() }}</span>
-      }
-    </label>
-
-    <label class="field">
-      <span class="field__label">{{ 'create.memberCount' | t }}</span>
-      <input
-        class="field__control"
-        type="number"
-        formControlName="memberCount"
-        min="0"
-        step="1"
-      />
-      @if (showError('memberCount')) {
-        <span class="field__error" role="alert">{{ 'create.errors.memberMin' | t }}</span>
-      }
+      <span>{{ 'create.memberCount' | t }}</span>
+      <input type="number" formControlName="memberCount" min="0" />
     </label>
 
     <div class="actions">
-      <button class="cancel" type="button" (click)="cancelled.emit()">
+      <button type="button" class="cancel" (click)="cancelled.emit()">
         {{ 'create.cancel' | t }}
       </button>
-      <button class="submit" type="submit">{{ 'create.submit' | t }}</button>
+      <button type="submit" class="save">{{ 'create.submit' | t }}</button>
     </div>
   </form>
 </section>
-

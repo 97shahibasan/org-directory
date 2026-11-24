@@ -1,22 +1,17 @@
 <div class="filters">
   <label class="field">
-    <span class="field__label">{{ 'filters.searchLabel' | t }}</span>
+    <span>{{ 'filters.searchLabel' | t }}</span>
     <input
       type="search"
-      class="field__control"
+      [ngModel]="orgService.search()"
+      (ngModelChange)="onSearch($event)"
       [placeholder]="'filters.searchPlaceholder' | t"
-      [ngModel]="draftSearch()"
-      (ngModelChange)="onSearchInput($event)"
     />
   </label>
 
   <label class="field">
-    <span class="field__label">{{ 'filters.statusLabel' | t }}</span>
-    <select
-      class="field__control"
-      [ngModel]="status()"
-      (ngModelChange)="statusChange.emit($event)"
-    >
+    <span>{{ 'filters.statusLabel' | t }}</span>
+    <select [ngModel]="orgService.statusFilter()" (ngModelChange)="onStatus($event)">
       <option value="all">{{ 'filters.statusAll' | t }}</option>
       <option value="active">{{ 'status.active' | t }}</option>
       <option value="inactive">{{ 'status.inactive' | t }}</option>
@@ -25,8 +20,8 @@
     </select>
   </label>
 
-  @if (search() || status() !== 'all') {
-    <button type="button" class="clear" (click)="clear.emit()">
+  @if (orgService.search() || orgService.statusFilter() !== 'all') {
+    <button type="button" class="clear" (click)="clear()">
       {{ 'filters.clear' | t }}
     </button>
   }
